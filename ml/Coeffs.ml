@@ -73,7 +73,11 @@ module CoefsZpZ (I : ConstInt) = struct
 	let p = I.p
 	type t = int
 
-	let reduce n = n mod p
+	let reduce n = 
+		let res = n mod p in 
+		if res >= 0 
+		then res
+		else res + p
 	
 	let zero = 0
 

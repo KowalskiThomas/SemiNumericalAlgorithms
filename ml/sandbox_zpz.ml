@@ -4,7 +4,7 @@ open Printf
 
 let _ = Random.self_init()
 
-let k = 123
+let k = 5
 
 module ConstK : ConstInt = struct
    let p = k
@@ -19,12 +19,18 @@ let one = Poly.Coefs.make 1
 let three = Poly.Coefs.make 3
 
 let ( + ) = Poly.(+)
+let ( - ) = Poly.(+)
+let ( * ) = Poly.(+)
 
-let p = construct 5 one (construct 4 three (construct 3 one (
-        construct 2 three (construct 1 one (construct 6 three Poly.poly_zero)))))
+let p = construct 5 one (construct 4 three 
+        (construct 3 one (construct 2 three 
+        (construct 1 one (construct 6 three 
+        Poly.poly_zero)))))
 
+let _ = printf "P = " 
 let _ = Poly.print_poly p
 
+(*
 let _ = 
     let d = (Poly.degre_median p) in 
     Poly.Degres.print d; printf "\n"
@@ -34,18 +40,23 @@ let _ =
     let h, l = Poly.decoupe_deg p d in 
     Poly.print_poly h;
     Poly.print_poly l; ()
+*)
 
+let verif_prod = 
+    let q = Poly.karatsuba p p in 
+    let q' = Poly.prod p p in 
+    
+    printf "P² par Kara = ";
+    Poly.print_poly q;
+    printf "P² par Naïf = ";
+    Poly.print_poly q';
+    assert (q = q')
 
-let q = Poly.karatsuba p p 
-let q' = Poly.prod p p
+let verif_plus = 
+    let q = Poly.karatsuba p p in 
+    let q' = Poly.prod p p in 
 
-let _ = print_newline()
+    let q'' = q + q' in 
+    Poly.print_poly q'';
+    assert (q'' = (Poly.add q q'))  
 
-let _ = 
-        let q'' =  (Poly.(+)) q q' in 
-        Poly.print_poly q''
-
-let _ = Poly.print_poly q
-let _ = Poly.print_poly q'
-
-let _ = assert (q = q')
