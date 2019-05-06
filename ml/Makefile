@@ -6,7 +6,7 @@ yeti:
 	./sandbox
 
 zpz:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml yeti.ml sandbox2.ml -o sandbox
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml yeti.ml sandbox_zpz.ml -o sandbox
 	./sandbox
 
 run: all

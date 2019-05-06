@@ -274,7 +274,7 @@ end
 
 module Polynome3 = Polynome(Degs.TripletsInt) (Coeffs.CoefsNum)
 module Polynome1 = Polynome(Degs.Int) (Coeffs.CoefsNum)
-module PolynomeZpZ = Polynome(Degs.Int) (Coeffs.CoefsZpZ)
+module PolynomeZpZ = Polynome(Degs.Int) (Coeffs.Z5Z)
 
 (* let ( + ) p1 p2 = Polynome1.add p1 p2
 let ( * ) p1 p2 = Polynome1.karatsuba p1 p2

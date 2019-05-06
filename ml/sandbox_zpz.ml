@@ -4,16 +4,16 @@ open Printf
 
 let _ = Random.self_init()
 
-module Poly = PolynomeZpZ
+let k = 123
+
+module ConstK : ConstInt = struct
+   let p = k
+end
+
+module Poly = Polynome(Degs.Int) (Coeffs.CoefsZpZ(ConstK))
 
 let construct d c p = 
         Poly.add (Poly.monomial c d) p
-
-let k = 123
-
-module ConstInt = struct
-   let value = k
-end
 
 let one = Poly.Coefs.make 1
 let three = Poly.Coefs.make 3
@@ -44,7 +44,6 @@ let _ = print_newline()
 let _ = 
         let q'' =  (Poly.(+)) q q' in 
         Poly.print_poly q''
-
 
 let _ = Poly.print_poly q
 let _ = Poly.print_poly q'

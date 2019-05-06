@@ -61,35 +61,40 @@ module CoefsNum : Coefs with type t = num = struct
 	let make x = Num.Int(x)
 end
 
-module CoefsZpZ : Coefs with type t = (int*int) = struct
-	type t = (int * int)
+module type ConstInt = sig
+	val p : int
+end;;
 
-	let reduce (p, n) = (p, n mod p)
+module Const5 : ConstInt = struct
+	let p = 5
+end
+
+module CoefsZpZ (I : ConstInt) = struct
+	let p = I.p
+	type t = int
+
+	let reduce n = n mod p
 	
-	let zero = (0, 0)
+	let zero = 0
 
-	let is_zero couple = 
-		let _, n = reduce couple in
+	let is_zero n = 
+		let n = reduce n in
 		n = 0
 
-	let add (p, x) (p', y) = 
-		assert (p = p');
-		reduce (p, x+y)
+	let add n m = 
+		reduce (n + m)
 
-	let sub (p, x) (p', y) = 
-		assert (p = p');
-		reduce (p, x - y)
+	let sub n m =
+		reduce (n - m)
 
-	let multiply (p, x) (p', y) =
-		assert (p = p');
-		reduce (p, x * y)
+	let multiply n m = 
+		reduce (n * m)
 
-	let to_string (p, x) = string_of_int x
+	let to_string n = string_of_int n
 
-	let make x = (1, x)
+	let make x = x
 
-	let change_base (_, x) p = (p, x)
-
-	let divide k n = failwith "divde"
-
+	let divide k n = reduce (k / n)
 end
+
+module Z5Z : Coefs = CoefsZpZ(Const5)
