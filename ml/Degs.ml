@@ -10,6 +10,7 @@ module type Degs = sig
 	val print : t -> unit
   val make : int -> t
   val is_zero : t -> bool
+  val random : unit -> t
 end
 
 module TripletsInt : Degs with type t = (int * int * int) = struct
@@ -56,6 +57,14 @@ module TripletsInt : Degs with type t = (int * int * int) = struct
   let make x = (x,x,x)
 
   let is_zero x = x = (0,0,0)
+
+  let random_int () : int = Random.int 99999
+
+  let random () = (
+    random_int (),
+    random_int (),
+    random_int ()
+  )
 end
 
 module Int : Degs with type t = int = struct
@@ -79,4 +88,8 @@ module Int : Degs with type t = int = struct
   let make x = x
 
   let is_zero x = x = 0
+
+  let random_int () : int = Random.int 99999
+
+  let random () = random_int ()
 end

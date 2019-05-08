@@ -1,0 +1,8 @@
+*.cmi
+*.cmo
+*.cmx
+tests_nums
+tests_num
+tests_zpz
+generator
+generateur

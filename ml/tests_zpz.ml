@@ -16,8 +16,8 @@ module Poly = Polynome(Degs.Int) (Coeffs.CoefsZpZ(ConstK))
 let construct d c p = 
         Poly.add (Poly.monomial c d) p
 
-let one = Poly.Coefs.make 1
-let three = Poly.Coefs.make 3
+let one = Poly.Coeffs.make 1
+let three = Poly.Coeffs.make 3
 
 let ( + ) = Poly.(+)
 let ( - ) = Poly.(+)

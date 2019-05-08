@@ -1,6 +1,8 @@
 open Big_int
 open Num
 
+let random_int () = Random.int 999999
+
 module type Coefs = sig
 	type t
 
@@ -19,6 +21,8 @@ module type Coefs = sig
 	val to_string : t -> string
 
 	val make : int -> t
+
+	val random : unit -> t
 end
 
 module CoefsInt : Coefs with type t = big_int = struct
@@ -39,6 +43,12 @@ module CoefsInt : Coefs with type t = big_int = struct
 	let divide x y = div_big_int x y
 
 	let make x = big_int_of_int x
+
+	let random () = multiply
+			(multiply 
+				(big_int_of_int (random_int ())) 
+				(big_int_of_int (random_int ()))
+			) (big_int_of_int (random_int ()))
 end
 
 module CoefsNum : Coefs with type t = num = struct
@@ -59,6 +69,12 @@ module CoefsNum : Coefs with type t = num = struct
 	let to_string x = string_of_num x
 
 	let make x = Num.Int(x)
+
+	let random () = multiply
+			(multiply 
+				(num_of_int (random_int ())) 
+				(num_of_int (random_int ()))
+			) (num_of_int (random_int ()))
 end
 
 module type ConstInt = sig
@@ -99,6 +115,8 @@ module CoefsZpZ (I : ConstInt) = struct
 	let make x = x
 
 	let divide k n = reduce (k / n)
+
+	let random () = reduce (random_int ())
 end
 
 module Z5Z : Coefs = CoefsZpZ(Const5)
