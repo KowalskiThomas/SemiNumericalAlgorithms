@@ -4,7 +4,8 @@ open Printf
 
 let _ = Random.self_init()
 
-module Poly = Polynome(Degs.Int) (Coeffs.CoefsNum)
+module Poly = Polynome(Degs.Int) (Coeffs.CoefsNum
+)
 
 let construct d c p = 
         Poly.add (Poly.monomial c d) p
@@ -16,10 +17,12 @@ let ( + ) = Poly.(+)
 let ( - ) = Poly.(+)
 let ( * ) = Poly.(+)
 
-let p = construct 5 one (construct 4 three 
+let p = construct 4564 one ( construct 5 one (construct 4 three 
         (construct 3 one (construct 2 three 
         (construct 1 one (construct 6 three 
-        Poly.poly_zero)))))
+        Poly.poly_zero))))))
+
+(* let p = construct 1 one (construct 0 three (Poly.poly_zero)) *)
 
 let _ = printf "P = " 
 let _ = Poly.print_poly p

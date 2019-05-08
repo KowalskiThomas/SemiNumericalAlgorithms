@@ -13,7 +13,14 @@ generator:
 run: nums zpz
 
 clean:
-	rm -rf _build *.cmi *.cmo *.byte *.native *.cmx sandbox karatsuba tests_zpz generator tests_nums
+	rm -rf _build *.cmi *.cmo *.byte *.native *.cmx sandbox karatsuba tests_zpz generator tests_nums perf
+
+merlin:
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml generateur.ml
+
+perf: 
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml generateur.ml perftest_nums.ml -o perf
+
 
 tar: clean
 	tar cvf CalML.tar.gz *

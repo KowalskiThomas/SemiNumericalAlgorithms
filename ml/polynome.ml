@@ -7,12 +7,16 @@ module type PolynomeSig = sig
 
   type distributed_polys
 
+  type unary_op = distributed_polys -> distributed_polys -> distributed_polys
+
   val poly_zero : distributed_polys
   val filter_zero : distributed_polys -> distributed_polys
   val is_zero : distributed_polys -> bool
   val add : distributed_polys -> distributed_polys -> distributed_polys
   val monomial : Coeffs.t -> Degres.t -> distributed_polys
   val print_poly : distributed_polys -> unit
+  val karatsuba : distributed_polys -> distributed_polys -> distributed_polys
+  val prod : unary_op
 end
 
 module Polynome(D : Degs) (C : Coefs) = struct
@@ -22,6 +26,8 @@ module Polynome(D : Degs) (C : Coefs) = struct
   type distributed_polys = 
       Null
     | P of Coeffs.t * Degres.t * distributed_polys
+
+  type unary_op = distributed_polys -> distributed_polys -> distributed_polys
 
   let poly_zero = Null
 
@@ -249,12 +255,19 @@ module Polynome(D : Degs) (C : Coefs) = struct
       P(c, Degres.minus d reducer, reduce_degree p' reducer)
 
   let rec karatsuba p q =
+    (* print_poly p;
+    print_poly q;
+    Printf.printf "\n\n"; *)
     if is_monomial p then 
       let p' = prod_monomial q p in
       assert (length p' = length p); p'
     else if is_monomial q then 
       let p' = prod_monomial p q in 
       assert (length p' = length p); p'
+    else if D.smaller (degree p) (D.make 2) then
+      prod p q
+    else if D.smaller (degree q) (D.make 2) then
+      prod p q
     else 
       let d = max (degre_median p) (degre_median q) in
       let p1, p0 = decoupe_deg p d in

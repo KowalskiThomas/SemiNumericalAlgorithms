@@ -3,6 +3,8 @@
 *.cmx
 tests_nums
 tests_num
+a.out
+perf
 tests_zpz
 generator
 generateur
