@@ -3,7 +3,6 @@ open Printf
 
 let _ = Random.self_init()
 
-open Karatsuba
 module P = Polynome1
 
 let construct d c p = 

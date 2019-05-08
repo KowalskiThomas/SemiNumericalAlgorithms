@@ -1,9 +1,9 @@
 nums:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml karatsuba.ml tests_nums.ml -o tests_nums
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml tests_nums.ml -o tests_nums
 	./tests_nums
 
 zpz:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml karatsuba.ml tests_zpz.ml -o tests_zpz
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml tests_zpz.ml -o tests_zpz
 	./tests_zpz
 
 run: nums zpz
