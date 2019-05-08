@@ -1,19 +1,15 @@
-all:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml karatsuba.ml -o karatsuba
-
-yeti:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml yeti.ml sandbox.ml -o sandbox
-	./sandbox
+nums:
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml karatsuba.ml tests_nums.ml -o tests_nums
+	./tests_nums
 
 zpz:
-	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml yeti.ml sandbox_zpz.ml -o sandbox
-	./sandbox
+	ocamlc -g nums.cma Coeffs.ml Degs.ml polynome.ml karatsuba.ml tests_zpz.ml -o tests_zpz
+	./tests_zpz
 
-run: all
-	./karatsuba
+run: nums zpz
 
 clean:
-	rm -rf _build *.cmi *.cmo *.byte *.native *.cmx sandbox karatsuba
+	rm -rf _build *.cmi *.cmo *.byte *.native *.cmx sandbox karatsuba tests_zpz tests_nums
 
 tar: clean
 	tar cvf CalML.tar.gz *

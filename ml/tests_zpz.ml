@@ -6,7 +6,8 @@ let _ = Random.self_init()
 
 let k = 5
 
-module ConstK : ConstInt = struct
+module ConstK : ConstInt = 
+struct
    let p = k
 end
 
@@ -29,18 +30,6 @@ let p = construct 5 one (construct 4 three
 
 let _ = printf "P = " 
 let _ = Poly.print_poly p
-
-(*
-let _ = 
-    let d = (Poly.degre_median p) in 
-    Poly.Degres.print d; printf "\n"
-
-let _ = 
-    let d = (Poly.degre_median p) in 
-    let h, l = Poly.decoupe_deg p d in 
-    Poly.print_poly h;
-    Poly.print_poly l; ()
-*)
 
 let verif_prod = 
     let q = Poly.karatsuba p p in 
