@@ -1,6 +1,8 @@
 open Num
 open Big_int
 
+(* TP avec les polynômes avec degrés triplets d'entiers *)
+
 type num =
 | Int of int
 | Big_int of Big_int.big_int

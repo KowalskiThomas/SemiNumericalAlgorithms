@@ -1,18 +1,45 @@
+(*
+ * L'interface des modules représentant
+ * les degrés des polynômes.
+ *)
 module type Degs = sig
+        (* Le type des degrés *)
 	type t
 
+  (* Addition *)
   val add : t -> t -> t
+
+  (* Constante "moins l'infini" pour polynômes nuls. *)
   val minus_ifty : t
+
+  (* Soustraction *)
 	val minus : t -> t -> t
+
+  (* Comparaison (smaller a b renvoie true si a < b) *)
 	val smaller : t -> t -> bool
+
+  (* Test d'égalité *)
 	val equals : t -> t -> bool
+
+  (* Supremum point-à-point *)
   val sup : t -> t -> t
+
+  (* Affiche un degré (sous la forme X^{...}) *)
 	val print : t -> unit
+
+  (* Créé un degré à partir d'un entier *)
   val make : int -> t
+
+  (* Test à zéro *)
   val is_zero : t -> bool
+
+  (* Renvoie un degré aléatoire *)
   val random : unit -> t
 end
 
+(*
+ * Degrés représentés par des triplets d'entiers.
+ *)
 module TripletsInt : Degs with type t = (int * int * int) = struct
 	type t = int * int * int
 
@@ -67,6 +94,9 @@ module TripletsInt : Degs with type t = (int * int * int) = struct
   )
 end
 
+(*
+ * Degrés représentés par des entiers.
+ *)
 module Int : Degs with type t = int = struct
   type t = int
 

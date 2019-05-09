@@ -4,7 +4,7 @@ module P = Polynome.Polynome1
 module Gen = Generator.MakeGenerator(P)
 
 (* Nombre de polynômes à générer. *)
-let max_length = 150
+let max_length = 15
 
 (* Génère n polynômes avec 1 <= k <= n tirages *)
 let rec create_polys n =
