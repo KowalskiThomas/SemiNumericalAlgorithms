@@ -3,7 +3,7 @@ open Sys
 
 let _ = Random.self_init ()
 
-module Generator (S : Polynome.PolynomeSig) = struct
+module MakeGenerator (S : Polynome.PolynomeSig) = struct
     module P = S
 
     let random_deg = P.Degres.random
@@ -20,10 +20,3 @@ module Generator (S : Polynome.PolynomeSig) = struct
                 P.add rand restant
         in aux longueur
 end
-
-module P = Polynome.Polynome1 
-module G = Generator(P) 
-
-let _ = 
-    let p = G.generer_polynome 100 in
-    P.print_poly p 

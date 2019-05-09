@@ -1,3 +1,5 @@
+open Printf
+
 open Degs
 open Coeffs
 
@@ -7,16 +9,18 @@ module type PolynomeSig = sig
 
   type distributed_polys
 
-  type unary_op = distributed_polys -> distributed_polys -> distributed_polys
+  type binary_op = distributed_polys -> distributed_polys -> distributed_polys
 
   val poly_zero : distributed_polys
   val filter_zero : distributed_polys -> distributed_polys
   val is_zero : distributed_polys -> bool
-  val add : distributed_polys -> distributed_polys -> distributed_polys
   val monomial : Coeffs.t -> Degres.t -> distributed_polys
   val print_poly : distributed_polys -> unit
-  val karatsuba : distributed_polys -> distributed_polys -> distributed_polys
-  val prod : unary_op
+  val print_poly_d : string -> distributed_polys -> unit
+  val add : binary_op
+  val karatsuba : binary_op
+  val prod : binary_op
+  val length : distributed_polys -> int
 end
 
 module Polynome(D : Degs) (C : Coefs) = struct
@@ -27,7 +31,7 @@ module Polynome(D : Degs) (C : Coefs) = struct
       Null
     | P of Coeffs.t * Degres.t * distributed_polys
 
-  type unary_op = distributed_polys -> distributed_polys -> distributed_polys
+  type binary_op = distributed_polys -> distributed_polys -> distributed_polys
 
   let poly_zero = Null
 
@@ -58,6 +62,10 @@ module Polynome(D : Degs) (C : Coefs) = struct
   let print_poly p = match p with
     | Null -> Printf.printf "0\n"
     | p -> print_poly_aux p
+
+  let print_poly_d d p = 
+    printf "%s = " d;
+    print_poly p
 
   let leading_coefficient p = match p with
     | Null -> Coeffs.zero
@@ -217,14 +225,17 @@ module Polynome(D : Degs) (C : Coefs) = struct
     let rec aux i p = 
       match p with
       | Null -> Degres.make 0
-      | P(_, d, Null) -> Degres.make 1
+      | P(_, d, Null) -> d (* Degres.make 1 *)
       | P(_, d, p') ->
-        if i = n / 2 
-        then 
-          if Degres.is_zero d then Degres.make 1
-          else d
-        else aux (i + 1) p'
-    in aux 0 p
+        if i = 0 
+        then d
+          (* if Degres.is_zero d then Degres.make 1
+          else d *)
+        else aux (i - 1) p'
+    in 
+      let d = aux ((n - 2) / 2) p in 
+      (* Degres.print d; printf "\n";  *)
+      d
 
   (* let decoupe p idx_ex = 
     let rec aux p compteur = match p with
@@ -255,19 +266,16 @@ module Polynome(D : Degs) (C : Coefs) = struct
       P(c, Degres.minus d reducer, reduce_degree p' reducer)
 
   let rec karatsuba p q =
-    (* print_poly p;
-    print_poly q;
-    Printf.printf "\n\n"; *)
     if is_monomial p then 
       let p' = prod_monomial q p in
       assert (length p' = length p); p'
     else if is_monomial q then 
       let p' = prod_monomial p q in 
       assert (length p' = length p); p'
-    else if D.smaller (degree p) (D.make 2) then
+    (* else if D.smaller (degree p) (D.make 2) then
       prod p q
     else if D.smaller (degree q) (D.make 2) then
-      prod p q
+      prod p q *)
     else 
       let d = max (degre_median p) (degre_median q) in
       let p1, p0 = decoupe_deg p d in
