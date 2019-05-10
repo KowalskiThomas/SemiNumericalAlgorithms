@@ -1,3 +1,34 @@
+\documentclass{article}
+\usepackage[a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{cmap}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{natbib}
+\usepackage[francais]{babel}
+
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{wrapfig}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{moreverb}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{graphics}
+\usepackage{graphicx}
+% \usepackage[labelformat=empty]{caption}
+
+\title{Rapport projet ASN \\Multiplication de polynômes creux}
+\author{Thomas Kowalski}
+%\date{}
+
+\begin{document}
+
+\maketitle
+
 \section{Présentation du problème}
 
 Le problème posé par le sujet est celui de la multiplication de polynômes creux. Ceux-ci s'opposent au polynômes "pleins" car ils présentent une répartition des coefficients / degrés beaucoup moins ???????????. Une représentation pratique pour ce genre de polynômes est la suivante :
@@ -17,22 +48,22 @@ Cette représentation permet de retranscrire la structure lacunaire des polynôm
 
 L'algorithme de Karatsuba "classique" consiste à appliquer le principe de division pour régner en découpant les polynômes en deux, en choisissant de le faire sur leur degré divisé par deux. Cette idée fonctionne en revanche beaucoup moins pour les polynômes creux. 
 
-Soit $P \in \mathbb{K}[X] = X^30000 + X^5 + X^4 + X^3 + X^2 + X^1 + X^0$. Il apparaît que pour multiplier ce polynôme, il serait plus malin de le diviser en deux sur le nombre de coefficients (plutôt que sur le degré). On obtient 
+Soit $P \in \mathbb{K}[X] = X^{30000} + X^5 + X^4 + X^3 + X^2 + X^1 + X^0$. Il apparaît que pour multiplier ce polynôme, il serait plus malin de le diviser en deux sur le nombre de coefficients (plutôt que sur le degré). On obtient 
 
-\begin{equation}
-	\text{Approche classique :} P = (X^{15000} \times X^{15000}) + X^5 + X^4 + X^3 + X^2 + X^1 + X^0 \\
-	\text{Approche "creuse" :} P = ((X^{29997} + X^2 + X^1 + X^0) \times X^3) + X^2 + X^1 + X^0 
-\end{equation}
+\begin{align*}
+	& \text{Approche classique :} & P = (X^{15000} \times X^{15000}) + X^5 + X^4 + X^3 + X^2 + X^1 + X^0 \\ 
+	& \text{Approche "creuse" :} & P = ((X^{29997} + X^2 + X^1 + X^0) \times X^3) + X^2 + X^1 + X^0 
+\end{align*}
 
-Pour cela, on choisit de découper sur le "degré médian" de $P$ plutôt que sur $d°(P) / 2$.
+Pour cela, on choisit de découper sur le "degré médian" de $P$ plutôt que sur $d(P) / 2$.
 
 \section{Algorithme proposé}
 
 On pose $d_m(P)$ le degré médian de P :
 
 \begin{itemize}
-	\item Si $n = #P$ est pair alors on prend le $\frac{n-2}{2}$-ème terme en partant du coefficient le plus haut ($0$-ième terme) ;
-	\item Si $n = #P$ est impair alors on prend le $\frac{n + 1}{2}$-ème terme.
+	\item Si $n = card(P)$ est pair alors on prend le $\frac{n-2}{2}$-ème terme en partant du coefficient le plus haut ($0$-ième terme) ;
+	\item Si $n = card(P)$ est impair alors on prend le $\frac{n + 1}{2}$-ème terme. \\
 \end{itemize}
 
 Ainsi, le degré médian de $X^5 + X^2 + X^0$ est $2$ ; celui de $X^12 + X^9 + X^7 + X^1$ est 9.
@@ -45,9 +76,9 @@ De plus, on définit la partie supérieure après $d$ $\sup(P, d)$ (resp. infér
 
 Soit $P, Q \in \mathbb{K}[X]$. On souhaite effectuer le produit $P \cdot Q$. \\
 
-On prend $d = max(d_m(P), d_m(Q)) $
+On prend $d = \max(d_m(P), d_m(Q)) $
 
-On a $P = \sup{P, d} + \inf{P,d } = \sup_{div}{P,d } X^{d} + \inf(P, d) $ et $ Q = \sum{Q, d} + \inf{Q, d} = \sup_{div}(Q, d) X^{d} + \inf(Q, d) $.  On peut dès lors appliquer l'algorithme de Karatsuba :
+On a $P = \sup{P, d} + \inf{P,d } = \sup_{div}{P,d } X^{d} + \inf(P, d) $ et $ Q = \sup(Q, d) + \inf(Q, d) = \sup_{div}(Q, d) X^{d} + \inf(Q, d) $.  On peut dès lors appliquer l'algorithme de Karatsuba :
 
 \begin{equation}
 	Z_0 = ...
@@ -64,3 +95,6 @@ Du fait du caractère compliqué de l'algorithme de Karatsuba, on peut s'attendr
 \end{itemize}
 
 On remarque immédiatement que la conjecture précédemment exposée se confirme. Pour les "petits" polynômes (jusqu'à ?????????), effectuer le produit naïf est beaucoup plus intéressant. Cette tendance finit par diminer à partir de ???????????. Puis, la différence est décroissante (et finit par être négative), ce qui signifie que l'algorithme de Karatsuba est, dans les cas de polynômes grands, plus intéressant.
+
+
+\end{document}
