@@ -1,0 +1,66 @@
+\section{Présentation du problème}
+
+Le problème posé par le sujet est celui de la multiplication de polynômes creux. Ceux-ci s'opposent au polynômes "pleins" car ils présentent une répartition des coefficients / degrés beaucoup moins ???????????. Une représentation pratique pour ce genre de polynômes est la suivante :
+
+\begin{lstlisting}
+	module Degres 
+	module Coeffs
+
+	type polynome = 
+		  Null
+		| P of Coeffs.t * Degres.t * polynome
+\end{lstlisting}
+
+Cette représentation permet de retranscrire la structure lacunaire des polynômes, éviter de stocker de grandes quantités de $0$ (pour rien), aller plus vite lorsque l'on veut accéder à tous les coefficients. Cela se fait au prix d'une complexité plus grande si l'on souhaite accéder au $k^{ième}$ terme d'un polynôme (ce qui ne nous intéresse pas trop dans le projet).
+
+\section{Adaptation de Karatsuba au problème}
+
+L'algorithme de Karatsuba "classique" consiste à appliquer le principe de division pour régner en découpant les polynômes en deux, en choisissant de le faire sur leur degré divisé par deux. Cette idée fonctionne en revanche beaucoup moins pour les polynômes creux. 
+
+Soit $P \in \mathbb{K}[X] = X^30000 + X^5 + X^4 + X^3 + X^2 + X^1 + X^0$. Il apparaît que pour multiplier ce polynôme, il serait plus malin de le diviser en deux sur le nombre de coefficients (plutôt que sur le degré). On obtient 
+
+\begin{equation}
+	\text{Approche classique :} P = (X^{15000} \times X^{15000}) + X^5 + X^4 + X^3 + X^2 + X^1 + X^0 \\
+	\text{Approche "creuse" :} P = ((X^{29997} + X^2 + X^1 + X^0) \times X^3) + X^2 + X^1 + X^0 
+\end{equation}
+
+Pour cela, on choisit de découper sur le "degré médian" de $P$ plutôt que sur $d°(P) / 2$.
+
+\section{Algorithme proposé}
+
+On pose $d_m(P)$ le degré médian de P :
+
+\begin{itemize}
+	\item Si $n = #P$ est pair alors on prend le $\frac{n-2}{2}$-ème terme en partant du coefficient le plus haut ($0$-ième terme) ;
+	\item Si $n = #P$ est impair alors on prend le $\frac{n + 1}{2}$-ème terme.
+\end{itemize}
+
+Ainsi, le degré médian de $X^5 + X^2 + X^0$ est $2$ ; celui de $X^12 + X^9 + X^7 + X^1$ est 9.
+
+On définit également le \emph{monôme médian de $P$} comme $X^{d_m(P)}$.
+
+\ \\
+
+De plus, on définit la partie supérieure après $d$ $\sup(P, d)$ (resp. inférieure $\inf(P, d)$) de $P \in \mathbb{K}[X]$ comme la somme des termes de degré supérieur ou égal (resp. strictement inférieur) à $d$. Enfin, on pose $\sup_{div}(P, d)$ comme $\sup{P} / X^{d}$.
+
+Soit $P, Q \in \mathbb{K}[X]$. On souhaite effectuer le produit $P \cdot Q$. \\
+
+On prend $d = max(d_m(P), d_m(Q)) $
+
+On a $P = \sup{P, d} + \inf{P,d } = \sup_{div}{P,d } X^{d} + \inf(P, d) $ et $ Q = \sum{Q, d} + \inf{Q, d} = \sup_{div}(Q, d) X^{d} + \inf(Q, d) $.  On peut dès lors appliquer l'algorithme de Karatsuba :
+
+\begin{equation}
+	Z_0 = ...
+\end{equation}
+
+\section{Présentation des résultats}
+
+Du fait du caractère compliqué de l'algorithme de Karatsuba, on peut s'attendre à ce que ses performances soient moins intéressantes pour les instances simples. Pour vérifier cela (et estimer à quel moment utiliser la multiplication de Karatsuba devient plus intéressant), j'ai mis en place une procédure de test.
+
+\begin{itemize}
+	\item Choisir $n$ (nombre de polynômes à tester, en moyenne de taille différentes) ;
+	\item Pour chaque $P_i$, calculer $P_i^2$ par la multiplication naïve et celle de Karatsuba, en mesurant le temps d'exécution ;
+	\item Faire la différence entre les listes de temps d'exécution et évaluer l'évolution de la différence en fonction de $n$.
+\end{itemize}
+
+On remarque immédiatement que la conjecture précédemment exposée se confirme. Pour les "petits" polynômes (jusqu'à ?????????), effectuer le produit naïf est beaucoup plus intéressant. Cette tendance finit par diminer à partir de ???????????. Puis, la différence est décroissante (et finit par être négative), ce qui signifie que l'algorithme de Karatsuba est, dans les cas de polynômes grands, plus intéressant.
