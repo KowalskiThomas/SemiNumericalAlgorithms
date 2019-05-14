@@ -4,19 +4,22 @@ open Printf
 
 let _ = Random.self_init()
 
+(* Constante pour l'anneau Z/pZ *)
 let k = 5
 
-module ConstK : ConstInt = struct
+(* Création du module paramétrant *)
+module ConstK : ConstInt = 
+struct
    let p = k
 end
 
+(* Création du module Polynômes pour l'anneau Z/kZ *)
 module Poly = Polynome(Degs.Int) (Coeffs.CoefsZpZ(ConstK))
 
-let construct d c p = 
-        Poly.add (Poly.monomial c d) p
+let construct d c p = Poly.add (Poly.monomial c d) p
 
-let one = Poly.Coefs.make 1
-let three = Poly.Coefs.make 3
+let one = Poly.Coeffs.make 1
+let three = Poly.Coeffs.make 3
 
 let ( + ) = Poly.(+)
 let ( - ) = Poly.(+)
@@ -29,18 +32,6 @@ let p = construct 5 one (construct 4 three
 
 let _ = printf "P = " 
 let _ = Poly.print_poly p
-
-(*
-let _ = 
-    let d = (Poly.degre_median p) in 
-    Poly.Degres.print d; printf "\n"
-
-let _ = 
-    let d = (Poly.degre_median p) in 
-    let h, l = Poly.decoupe_deg p d in 
-    Poly.print_poly h;
-    Poly.print_poly l; ()
-*)
 
 let verif_prod = 
     let q = Poly.karatsuba p p in 

@@ -1,15 +1,68 @@
+open Printf
+
 open Degs
 open Coeffs
 
+(*
+ * L'interface pour les modules de Polynômes.
+ * Degres : Module des degrés
+ * Coeffs : Module des coefficients
+ *)
+module type PolynomeSig = sig
+  module Degres : Degs
+  module Coeffs : Coefs
+
+  (* Type représentant un polynôme. *)
+  type distributed_polys
+        
+  (* Type de fonction "opération binaire" *)
+  type binary_op = distributed_polys -> distributed_polys -> distributed_polys
+
+  (* Polynôme nul *)
+  val poly_zero : distributed_polys
+
+  (* Supprime les composantes nulles d'un polynôme. *)
+  val filter_zero : distributed_polys -> distributed_polys
+
+  (* Test à zéro *)
+  val is_zero : distributed_polys -> bool
+
+  (* Créé un monôme de coefficient et de degré donnés. *)
+  val monomial : Coeffs.t -> Degres.t -> distributed_polys
+
+  (* Affiche un polynôme. *)
+  val print_poly : distributed_polys -> unit
+
+  (* Affiche un polynôme nommé : "%s = {...}" *)
+  val print_poly_d : string -> distributed_polys -> unit
+
+  (* Addition *)
+  val add : binary_op
+
+  (* Multiplication par Karatsuba *)
+  val karatsuba : binary_op
+  
+  (* Multiplication naïve *)
+  val prod : binary_op
+
+  (* Renvoie le nombre de coefficients d'un polynôme. *)
+  val length : distributed_polys -> int
+end
+
+(*
+ * Foncteur pour les polynômes.
+ * D : Degrés à utiliser
+ * C : Coefficients à utiliser
+ *)
 module Polynome(D : Degs) (C : Coefs) = struct
-  module Degre = D
   module Degres = D
-  module Coefs = C
   module Coeffs = C
 
   type distributed_polys = 
       Null
-    | P of Coefs.t * Degre.t * distributed_polys
+    | P of Coeffs.t * Degres.t * distributed_polys
+
+  type binary_op = distributed_polys -> distributed_polys -> distributed_polys
 
   let poly_zero = Null
 
@@ -17,7 +70,7 @@ module Polynome(D : Degs) (C : Coefs) = struct
     match p with 
     | Null -> Null
     | P(k, d, p') -> 
-      if Coefs.is_zero k 
+      if Coeffs.is_zero k 
       then filter_zero p'
       else P(k, d, filter_zero p')
 
@@ -28,8 +81,8 @@ module Polynome(D : Degs) (C : Coefs) = struct
   let rec print_poly_aux p = match p with
     | Null -> Printf.printf "\n"
     | P(coef, d, p') ->
-      let _ = Printf.printf "%s * " (Coefs.to_string coef) in
-      let _ = Degre.print d in 
+      let _ = Printf.printf "%s * " (Coeffs.to_string coef) in
+      let _ = Degres.print d in 
       let _ = 
         if p' <> Null 
         then Printf.printf " + " 
@@ -41,23 +94,31 @@ module Polynome(D : Degs) (C : Coefs) = struct
     | Null -> Printf.printf "0\n"
     | p -> print_poly_aux p
 
+  let print_poly_d d p = 
+    printf "%s = " d;
+    print_poly p
+
+  (* Coefficient dominant *)
   let leading_coefficient p = match p with
-    | Null -> Coefs.zero
+    | Null -> Coeffs.zero
     | P(x, _, _) -> x
 
+  (* Polynôme privé de son coefficient dominant. *)
   let reductum p = match p with
     | Null -> poly_zero
     | P(_, _, p') -> p'
 
+  (* Degré *)
   let degree p = match p with
     | Null -> Degres.minus_ifty
     | P(_, d, _) -> d
 
+  (* Vérifie que la représentation d'un polynôme est correcte. *)
   let rec correct_rep p = 
     let rec correct_rep_aux p d_last = match p with
       | Null -> true
       | P(_, d_cur, p') -> 
-        if Degre.smaller d_cur d_last
+        if Degres.smaller d_cur d_last
         then correct_rep_aux p' d_cur
         else false
     in
@@ -65,13 +126,14 @@ module Polynome(D : Degs) (C : Coefs) = struct
       | Null -> true
       | P(_, d, p') -> correct_rep_aux p' d
 
+  (* Egalité *)
   let rec equals p1 p2 = match p1, p2 with
     | Null, Null -> true
     | Null, _ | _, Null -> false
     | P(c1, d1, p1'), P(c2, d2, p2') ->
       if c1 <> c2 
       then false
-      else if not (Degre.equals d1 d2)
+      else if not (Degres.equals d1 d2)
       then false
       else equals p1' p2'
 
@@ -79,9 +141,9 @@ module Polynome(D : Degs) (C : Coefs) = struct
     | Null, p 
     | p, Null -> p
     | P(c1, d1, p1'), P(c2, d2, p2') -> 
-      if Degre.equals d1 d2 
-      then P(Coefs.add c1 c2, d1, add_aux p1' p2')
-      else if Degre.smaller d1 d2
+      if Degres.equals d1 d2 
+      then P(Coeffs.add c1 c2, d1, add_aux p1' p2')
+      else if Degres.smaller d1 d2
       then P(c2, d2, add_aux p1 p2')
       else P(c1, d1, add_aux p1' p2)
 
@@ -89,12 +151,15 @@ module Polynome(D : Degs) (C : Coefs) = struct
     let res = add_aux p1 p2 in 
     filter_zero res
 
+  (* Renvoie l'opposé d'un polynôme *)
   let rec oppose p = match p with
     | Null -> Null
-    | P(c, d, p') -> P(Coefs.multiply (Coefs.make (-1)) c, d, oppose p')
+    | P(c, d, p') -> P(Coeffs.multiply (Coeffs.make (-1)) c, d, oppose p')
 
+  (* Soustraction *)
   let minus p q = add p (oppose q)
 
+  (* Produit par un monôme *)
   let rec prod_monomial m p = match m with
     | Null -> Null
     | P(c, d, P(_)) -> 
@@ -103,12 +168,13 @@ module Polynome(D : Degs) (C : Coefs) = struct
     | P(cm, dm, Null) ->
       match p with 
       | Null -> Null
-      | P(cp, dp, p') -> P(Coefs.multiply cp cm, Degre.add dm dp, prod_monomial m p')
+      | P(cp, dp, p') -> P(Coeffs.multiply cp cm, Degres.add dm dp, prod_monomial m p')
 
     let prod_monomial_u (d:Degres.t) (p:distributed_polys) = 
-      let m = monomial (Coefs.make 1) d in
+      let m = monomial (Coeffs.make 1) d in
       prod_monomial m p
 
+  (* Produit (naïf) *)
   let rec prod p1 p2 = match p1, p2 with
     | Null, p | p, Null -> Null
     | P(c1, d1, p1'), P(c2, d2, p2') ->
@@ -120,6 +186,7 @@ module Polynome(D : Degs) (C : Coefs) = struct
         (prod p1' p2)
       )
 
+  (* PPCM de deux polynômes *)
   let ppcm m1 m2 = match m1, m2 with
     | _, Null
     | Null, _ -> Null
@@ -130,14 +197,14 @@ module Polynome(D : Degs) (C : Coefs) = struct
         let _ = assert p1' = Null in
         let _ = assert p2' = Null in
         *)
-        P(Coefs.make 1, Degres.sup d1 d2, Null)
+        P(Coeffs.make 1, Degres.sup d1 d2, Null)
 
   let reduce p q = match p, q with
     | _, Null -> failwith "Division par 0"
     | Null, _ -> Null
     | P(c, dp, p'), P(cq, dq, _) -> 
       if Degres.smaller dq dp 
-      then P(Coefs.divide c cq, Degres.minus dp dq, p')
+      then P(Coeffs.divide c cq, Degres.minus dp dq, p')
       else p
 
   let strong_reduce p q = 
@@ -149,7 +216,7 @@ module Polynome(D : Degs) (C : Coefs) = struct
         then 
           let result, confirm = aux p' q in
           if confirm
-          then P(Coefs.divide c cq, Degres.minus dp dq, result), true
+          then P(Coeffs.divide c cq, Degres.minus dp dq, result), true
           else p, false
         else p, false
     in 
@@ -160,18 +227,19 @@ module Polynome(D : Degs) (C : Coefs) = struct
     | [] -> p
     | t::q -> reduce_list (reduce p t) q 
 
+  (* Renvoie le S-polynôme de p et q *)
   let spol p q = match p, q with
     | Null, _
     | _, Null -> failwith "Degré 0"
     | P(cp, dp, p'), P(cq, dq, q') -> 
-      let d = Degre.sup dp dq in 
+      let d = Degres.sup dp dq in 
         minus
           (
             prod
               (
                 monomial 
-                  (Coefs.divide (Coefs.make 1) cp) 
-                  (Degre.minus d dp)
+                  (Coeffs.divide (Coeffs.make 1) cp) 
+                  (Degres.minus d dp)
               )
               p
           )
@@ -179,12 +247,13 @@ module Polynome(D : Degs) (C : Coefs) = struct
             prod
               (
                 monomial 
-                  (Coefs.divide (Coefs.make 1) cq)
-                  (Degre.minus d dq)
+                  (Coeffs.divide (Coeffs.make 1) cq)
+                  (Degres.minus d dq)
               )
               q
           )
 
+  (* Vérifie si p est un monôme (ou 0) *)
   let is_monomial p = match p with
     | Null -> true
     | P(_, _, Null) -> true
@@ -194,48 +263,51 @@ module Polynome(D : Degs) (C : Coefs) = struct
     | Null -> 0
     | P(_, _, p') -> (length p') + 1
 
+  (* 
+   * Détermine le degré médian d'un polynôme.
+   * - Dans le cas d'un polynôme de longueur 2,
+   *   le degré médian est le plus haut.
+   * - Dans le cas d'un polynôme de longueur 1,
+   *   le degré médian est le plus haut.
+   * - Dans le cas d'un polynôme nul, le degré
+   *   médian est 0.
+   *)
   let degre_median p = 
     let n = length p in
     let rec aux i p = 
       match p with
-      | Null -> Degres.make 0
-      | P(_, d, Null) -> Degres.make 1
+      | Null -> Degres.minus_ifty
+      | P(_, d, Null) -> d 
       | P(_, d, p') ->
-        if i = n / 2 
-        then 
-          if Degre.is_zero d then Degre.make 1
-          else d
-        else aux (i + 1) p'
-    in aux 0 p
-
-  (* let decoupe p idx_ex = 
-    let rec aux p compteur = match p with
-    | Null -> Null, Null
-    | P(c, d, p') -> 
-      if compteur = idx_ex then 
-        Null, (add (P(c, d, Null)) p')
-      else 
-        let suite, fin = aux p' (compteur + 1) in 
-        (add (P(c, d, Null)) suite), fin
+        if i = 0 
+        then d
+        else aux (i - 1) p'
     in 
-    aux p 1 *)
+      let d = aux ((n - 2) / 2) p in 
+      d
 
+  (* Découpe un polynôme selon un degré donné.
+   * Inclut le terme de degré d dans la partie
+   * haute.
+   *)
   let decoupe_deg p d = 
     let rec aux p = match p with
     | Null -> Null, Null
     | P(c, pd, p') -> 
       let high, low = aux p' in 
       if pd >= d then
-        P(c, Degre.minus pd d, high), low
+        P(c, Degres.minus pd d, high), low
       else
         high, P(c, pd, low)
     in aux p 
 
+  (* Réduit le degré d'un polynôme. *)
   let rec reduce_degree (p : distributed_polys) reducer = match p with
     | Null -> Null
     | P(c, d, p') -> 
       P(c, Degres.minus d reducer, reduce_degree p' reducer)
 
+  (* Produit par l'algorithme de Karatsuba. *)
   let rec karatsuba p q =
     if is_monomial p then 
       let p' = prod_monomial q p in
@@ -266,16 +338,16 @@ module Polynome(D : Degs) (C : Coefs) = struct
           )
         )
 
+  (* Surcharge opérateurs (ça marche des fois) *)
   let ( + ) = add 
   let ( * ) = karatsuba 
   let ( - ) = minus 
 
 end
 
-module Polynome3 = Polynome(Degs.TripletsInt) (Coeffs.CoefsNum)
-module Polynome1 = Polynome(Degs.Int) (Coeffs.CoefsNum)
-module PolynomeZpZ = Polynome(Degs.Int) (Coeffs.Z5Z)
-
-(* let ( + ) p1 p2 = Polynome1.add p1 p2
-let ( * ) p1 p2 = Polynome1.karatsuba p1 p2
-let ( - ) p1 p2 = Polynome1.minus p1 p2 *)
+(* Polynômes des TPs (nums / triplets) *)
+module Polynome3 : PolynomeSig = Polynome(Degs.TripletsInt) (Coeffs.CoefsNum)
+(* Polynômes du projet (nums / entiers) *)
+module Polynome1 : PolynomeSig = Polynome(Degs.Int) (Coeffs.CoefsNum)
+(* Polynômes de Z/pZ (int / Z/5Z) *)
+module PolynomeZpZ : PolynomeSig = Polynome(Degs.Int) (Coeffs.Z5Z)
