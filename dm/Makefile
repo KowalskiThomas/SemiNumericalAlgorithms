@@ -1,8 +1,11 @@
 all:
-	g++ exo1.cpp -lgmp -lgmpxx -o exo1 -g -O3 -std=c++17
+	g++ tests.cpp -lgmp -lgmpxx -o tests -g -O3 -std=c++17
 	
 clean:
 	rm -rf exo a.out
+
+format:
+	clang-format -i *.h *.cpp
 
 cleandata:
 	rm -rf *.txt
