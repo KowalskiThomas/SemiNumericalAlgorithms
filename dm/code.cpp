@@ -26,7 +26,7 @@ auto root(const entier a) -> entier
   return r_before;
 }
 
-using _ = square_n<150>;
+using _ = roots_up_to<150>;
 
 auto root(const entier a, const unsigned int N) -> entier
 {

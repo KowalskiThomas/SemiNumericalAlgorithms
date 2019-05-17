@@ -30,13 +30,13 @@ auto root(const entier a) -> entier
 }
 
 template <int n>
-struct square_n
+struct roots_up_to
 {
   static constexpr auto f = root<n>;
-  typedef square_n<n - 1> next;
+  typedef roots_up_to<n - 1> next;
 };
 
-using _ = square_n<150>;
+using _ = roots_up_to<150>;
 
 auto root(const entier a, const unsigned int N) -> entier
 {
@@ -132,5 +132,18 @@ auto find_p_q_(const entier a) -> optional<std::pair<entier, entier>>
   return std::pair<entier, entier>(p, q);
 }
 auto find_p_q = find_p_q_<1000>;
+
+template <typename Function>
+auto test_time(Function f) -> void
+{
+  for(int i = 100; i < 1000; i++)
+  {
+    auto a = get_random(i);
+    auto f_bound = std::bind(f, a);
+    auto t = get_exec_time(f_bound);
+    std::cout << i;
+    std::cout << " " << t << std::endl;
+  }
+}
 
 #endif
