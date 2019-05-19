@@ -7,61 +7,67 @@ auto test_power() -> void
   power<unsigned long long>(entier(150), 5);
 }
 
-auto test_exo1() -> void
+template <unsigned int n>
+auto test_root() -> void
 {
-  std::cout << "Tests root<2>" << std::endl;
-  for(entier i = 0; i < 99999; i++)
+  const auto min = 0;
+  const auto max = 999;
+  std::cout << "Tests root<" << n << "> from " << min << " to " << max << std::endl;
+  for(entier i = 1; i < max; i++)
   {
-    auto root_i = root<2>(i);
+    auto root_i = root<n>(i);
     assert(root_i <= i);
     assert(root_i * root_i <= i);
-    assert((root_i + 1) * (root_i + 1) > i);
-    // std::cout << "sqrt(" << i << ") = " << root<2>(a) << std::endl;
+    assert(power(root_i + 1, n) > i);
   }
-  std::cout << "Tests OK" << std::endl;
-}
-
-template <typename Function>
-auto test_time(Function f) -> void
-{
-  for(int i = 100; i < 1000; i++)
-  {
-    auto a = get_random(i);
-    auto f_bound = std::bind(f, a);
-    auto t = get_exec_time(f_bound);
-    std::cout << i;
-    std::cout << " " << t << std::endl;
-  }
+  std::cout << "=> OK" << std::endl;
 }
 
 template <int n>
-auto test_all()
+auto test_all_roots() -> void
 {
-  std::cout << n << std::endl;
-  test_time(square_n<n>::f);
-  test_all<n - 1>();
+  test_root<n>();
+  test_all_roots<n - 1>();
 }
 
 template <>
-auto test_all<1>()
+auto test_all_roots<1>() -> void{
+
+};
+
+template <int n>
+auto time_all_roots()
 {
-  std::cout << 1 << std::endl;
-  test_time(square_n<1>::f);
+  std::cout << n << std::endl;
+  test_time(roots_up_to<n>::f);
+  test_all_roots<n - 1>();
 }
 
-auto test_factor_pq() -> void
+template <>
+auto time_all_roots<1>()
 {
-  for(entier t = 1; t < 999; t++)
+  std::cout << 1 << std::endl;
+  test_time(roots_up_to<1>::f);
+}
+
+auto test_factor_pq(const bool display_info = false, const bool display_results = false) -> void
+{
+  const auto min = 1;
+  const auto max = 999;
+  std::cout << "Test factorization a = pq from " << min << " to " << max << std::endl;
+  for(entier t = min; t < max; t++)
   {
     auto f = factor<150>(t);
     if(f.a_ != t && f.b_ != 1)
     {
-      std::cout << "Can't test factor_pq with factorizable '" << t << "'" << std::endl;
+      if(display_info)
+        std::cout << "Can't test factor_pq with factorizable '" << t << "'" << std::endl;
       continue;
     }
     else if(is_prime(t))
     {
-      std::cout << "Can't test factor_pq with prime '" << t << "'" << std::endl;
+      if(display_info)
+        std::cout << "Can't test factor_pq with prime '" << t << "'" << std::endl;
       continue;
     }
 
@@ -69,32 +75,40 @@ auto test_factor_pq() -> void
 
     if(!p_q)
     {
-      std::cout << "Couldn't find (p, q) for '" << t << "'" << std::endl;
+      if(display_info)
+        std::cout << "Couldn't find (p, q) for '" << t << "'" << std::endl;
       continue;
     }
     auto p = p_q->first;
     auto q = p_q->second;
-    std::cout << "Pour " << t << " p = " << p << ", q = " << q << std::endl;
+
+    if(display_info || display_results)
+      std::cout << "For " << t << " p = " << p << ", q = " << q << std::endl;
 
     assert(p * q == t);
     assert((p + q) * (p + q) / 4 - (p - q) * (p - q) / 4 == t);
   }
+  std::cout << "=> OK" << std::endl;
 }
 
-auto factor_150 = factor<25>;
-square_n<1500> _square_n;
-
+roots_up_to<1500> _roots_up_to;
 auto test_roots() -> void
 {
-  test_all<50>();
+  test_all_roots<50>();
+}
+
+auto factorise = factor<150>;
+auto test_factor() -> void
+{
   entier x = 125;
-  auto result = factor_150(x);
+  auto result = factorise(x);
   std::cout << "Best factor for " << x << " : " << result.a_ << " / " << result.b_ << std::endl;
 }
 
 auto main() -> int
 {
   test_factor_pq();
-  // test_roots();
+  test_roots();
+  test_factor();
   return 0;
 }
