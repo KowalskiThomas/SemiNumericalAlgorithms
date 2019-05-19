@@ -11,6 +11,7 @@
 #include <gmpxx.h>
 #include <iostream>
 
+using std::pair;
 using std::size_t;
 using std::experimental::nullopt;
 using std::experimental::optional;
@@ -78,6 +79,19 @@ auto is_prime(entier a) -> bool
       return false;
 
   return true;
+}
+
+template <typename Function>
+auto test_time(Function f) -> void
+{
+  for(int i = 100; i < 1000; i++)
+  {
+    auto a = get_random(i);
+    auto f_bound = std::bind(f, a);
+    auto t = get_exec_time(f_bound);
+    std::cout << i;
+    std::cout << " " << t << std::endl;
+  }
 }
 
 #endif

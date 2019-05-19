@@ -1,7 +1,6 @@
 #ifndef CODE
 #define CODE
 
-#include "code.h"
 #include "utils.h"
 
 template <int N>
@@ -60,11 +59,10 @@ auto root(const entier a, const unsigned int N) -> entier
   return r_before;
 }
 
-template <unsigned long k_max>
-auto factor(entier a) -> couple
+auto factor_power(entier a, entier k_max) -> pair<entier, entier>
 {
   if(a == 1)
-    return couple(1, k_max);
+    return pair(1, k_max);
 
   auto best_base = entier();
   auto best_exp = 0;
@@ -72,9 +70,11 @@ auto factor(entier a) -> couple
   for(unsigned long exp = 1; exp < k_max; exp++)
   {
     auto expth_root = root(a, exp);
-    // std::cout << exp << "V" << a << " = " << expth_root << std::endl;
+
+    if(expth_root == 1)
+      return pair(best_base, best_exp);
+
     auto pow = power(expth_root, exp);
-    // std::cout << expth_root << "^" << exp << " = " << pow << std::endl;
     if(pow == a)
     {
       if(exp > best_exp)
@@ -85,13 +85,10 @@ auto factor(entier a) -> couple
     }
   }
   // return make_couple(best_base, best_exp);
-  return couple(best_base, best_exp);
+  return pair<entier, entier>(best_base, best_exp);
 }
 
-auto __ = factor<150>;
-
-template <unsigned long long max_iter>
-auto find_p_q_(const entier a) -> optional<std::pair<entier, entier>>
+auto factor2(const entier a, const entier max_iter) -> optional<std::pair<entier, entier>>
 {
   assert(a != 1);
 
@@ -102,7 +99,7 @@ auto find_p_q_(const entier a) -> optional<std::pair<entier, entier>>
   entier u = root<2>(a);
 
   auto is_square = false;
-  unsigned long long iter = 0;
+  entier iter = 0;
   entier diff;
   entier v;
   do
@@ -131,19 +128,21 @@ auto find_p_q_(const entier a) -> optional<std::pair<entier, entier>>
 
   return std::pair<entier, entier>(p, q);
 }
-auto find_p_q = find_p_q_<1000>;
 
-template <typename Function>
-auto test_time(Function f) -> void
+auto factor3(entier x, entier max_a) -> optional<pair<entier, entier>>
 {
-  for(int i = 100; i < 1000; i++)
+  entier a = 1;
+  while(a < max_a)
   {
-    auto a = get_random(i);
-    auto f_bound = std::bind(f, a);
-    auto t = get_exec_time(f_bound);
-    std::cout << i;
-    std::cout << " " << t << std::endl;
+    const auto a3 = power(a, 3);
+    const auto y = x + a3;
+    const auto b = root<3>(y);
+    const auto b3 = power(b, 3);
+    if(b3 == y)
+      return pair((a - b), (a * a + 2 * a * b + b * b));
+    a++;
   }
+  return nullopt;
 }
 
 #endif

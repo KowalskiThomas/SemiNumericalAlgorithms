@@ -3,8 +3,14 @@
 
 auto test_power() -> void
 {
-  power<unsigned long>(entier(150), 5);
-  power<unsigned long long>(entier(150), 5);
+  std::cout << "Tests power" << std::endl;
+  for(entier a = 1; a < 1000; a++)
+  {
+    assert(power(entier(a), 0) == 1);
+    assert(power(entier(a), 1) == a);
+    assert(a * a * a * a * a == power<unsigned long>(entier(a), 5));
+  }
+  std::cout << "=> OK" << std::endl;
 }
 
 template <unsigned int n>
@@ -50,15 +56,15 @@ auto time_all_roots<1>()
   test_time(roots_up_to<1>::f);
 }
 
-auto test_factor_pq(const bool display_info = false, const bool display_results = false) -> void
+auto test_factor2(const entier max_iter = 1000, const bool display_info = false, const bool display_results = false) -> void
 {
   const auto min = 1;
   const auto max = 999;
   std::cout << "Test factorization a = pq from " << min << " to " << max << std::endl;
   for(entier t = min; t < max; t++)
   {
-    auto f = factor<150>(t);
-    if(f.a_ != t && f.b_ != 1)
+    auto f = factor_power(t, t / 4);
+    if(f.first != t && f.second != 1)
     {
       if(display_info)
         std::cout << "Can't test factor_pq with factorizable '" << t << "'" << std::endl;
@@ -71,7 +77,7 @@ auto test_factor_pq(const bool display_info = false, const bool display_results 
       continue;
     }
 
-    auto p_q = find_p_q(t);
+    auto p_q = factor2(t, max_iter);
 
     if(!p_q)
     {
@@ -91,24 +97,45 @@ auto test_factor_pq(const bool display_info = false, const bool display_results 
   std::cout << "=> OK" << std::endl;
 }
 
+auto test_factor3(const entier max_iter = 1000, const bool display_info = false, const bool display_results = false) -> void
+{
+  const auto min = 1;
+  const auto max = 999;
+  std::cout << "Test factorization a = pq from " << min << " to " << max << std::endl;
+  for(entier t = min; t < max; t++)
+  {
+    auto opq = factor3(t, t);
+    if(!opq)
+      continue;
+
+    auto pq = *opq;
+    auto p = pq.first;
+    auto q = pq.second;
+    std::cout << p << " * " << q << " = " << t << std::endl;
+    assert(p * q == t);
+  }
+}
+
 roots_up_to<1500> _roots_up_to;
 auto test_roots() -> void
 {
   test_all_roots<50>();
 }
 
-auto factorise = factor<150>;
-auto test_factor() -> void
+auto test_factor_power(const entier max_iter = 10000) -> void
 {
   entier x = 125;
-  auto result = factorise(x);
-  std::cout << "Best factor for " << x << " : " << result.a_ << " / " << result.b_ << std::endl;
+  auto result = factor_power(x, max_iter);
+
+  std::cout << "Best factor for " << x << " : " << result.first << " / " << result.second << std::endl;
 }
 
 auto main() -> int
 {
-  test_factor_pq();
+  test_power();
+  test_factor_power();
+  test_factor2();
+  // test_factor3();
   test_roots();
-  test_factor();
   return 0;
 }
