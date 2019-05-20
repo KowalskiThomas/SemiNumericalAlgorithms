@@ -14,9 +14,12 @@ let rec create_polys min max  =
   Calcule f(p, p) pour chaque p de l.
   Renvoie la liste des temps de calcul. 
 *)
+let counter = ref(0)
 let rec test f l = match l with
 | [] -> []
 | t::q -> 
+    (* printf "%d\n" !counter; *)
+    counter := !counter + 1;
     let tick = Sys.time () in 
     let _ = f t t in 
     let tock = Sys.time () in 
@@ -42,8 +45,8 @@ let rec print_results polys timediffs =
         | p::qp, t::qt -> printf "%d %f\n" (P.length p) t; print_results qp qt
 
 (* Nombre de polynômes à générer. *)
-let max_length = 99999
-let min_length = 88888
+let max_length = 5000
+let min_length = 1000
 let _ = 
     (* On génère des polynômes. *)
     printf "Génération...\n";
