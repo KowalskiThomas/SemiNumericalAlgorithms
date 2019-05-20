@@ -139,7 +139,7 @@ auto factor3(entier x, entier max_a) -> optional<pair<entier, entier>>
     const auto b = root<3>(y);
     const auto b3 = power(b, 3);
     if(b3 == y)
-      return pair((a - b), (a * a + 2 * a * b + b * b));
+      return pair((b - a), (a * a + a * b + b * b));
     a++;
   }
   return nullopt;

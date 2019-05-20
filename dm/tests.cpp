@@ -101,19 +101,33 @@ auto test_factor3(const entier max_iter = 1000, const bool display_info = false,
 {
   const auto min = 1;
   const auto max = 999;
-  std::cout << "Test factorization a = pq from " << min << " to " << max << std::endl;
+  std::cout << "Test factorization a = pq with a = a³-b³ from " << min << " to " << max << std::endl;
   for(entier t = min; t < max; t++)
   {
     auto opq = factor3(t, t);
     if(!opq)
+    {
+      if(display_info)
+        std::cout << "Couldn't find factorisation for " << t << std::endl;
       continue;
+    }
 
     auto pq = *opq;
     auto p = pq.first;
     auto q = pq.second;
-    std::cout << p << " * " << q << " = " << t << std::endl;
+
+    if(p == 1)
+    {
+      if(display_info)
+        std::cout << "Factorization for " << t << " is 1 and " << q << std::endl;
+      continue;
+    }
+
+    if(display_results)
+      std::cout << p << " * " << q << " = " << t << std::endl;
     assert(p * q == t);
   }
+  std::cout << "=> OK" << std::endl;
 }
 
 roots_up_to<1500> _roots_up_to;
@@ -135,7 +149,7 @@ auto main() -> int
   test_power();
   test_factor_power();
   test_factor2();
-  // test_factor3();
+  test_factor3();
   test_roots();
   return 0;
 }
