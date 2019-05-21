@@ -309,13 +309,17 @@ module Polynome(D : Degs) (C : Coefs) = struct
 
   (* Produit par l'algorithme de Karatsuba. *)
   let rec karatsuba p q =
-    if is_monomial p then 
-      let p' = prod_monomial q p in
-      assert (length p' = length p); p'
-    else if is_monomial q then 
-      let p' = prod_monomial p q in 
-      assert (length p' = length p); p'
-    else 
+    (* print_poly_d "P" p;
+    print_poly_d "Q" q;
+    print_endline ""; *)
+    match p, q with 
+    | Null, _ -> Null
+    | _, Null -> Null
+    | P(_, _, Null), _ -> prod_monomial p q
+    | _, P(_, _, Null) -> prod_monomial q p
+    | P(_, _, P(_, _, Null)), _ -> prod p q
+    | _, P(_,_, P(_,_,Null)) -> prod p q
+    | _, _ -> 
       let d = max (degre_median p) (degre_median q) in
       let p1, p0 = decoupe_deg p d in
       let q1, q0 = decoupe_deg q d in 

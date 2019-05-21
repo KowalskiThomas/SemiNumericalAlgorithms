@@ -119,7 +119,7 @@ module Int : Degs with type t = int = struct
 
   let is_zero x = x = 0
 
-  let random_int () : int = Random.int 9999
+  let random_int () : int = Random.int 999
 
   let random () = random_int ()
 end

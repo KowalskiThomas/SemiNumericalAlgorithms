@@ -14,10 +14,10 @@ let one = Poly.Coeffs.make 1
 let three = Poly.Coeffs.make 3
 
 
-let p = construct 4564 one (construct 5 one (construct 4 three 
+let p = construct 34 three (construct 4564 one (construct 5 one (construct 4 three 
         (construct 3 one (construct 2 three 
         (construct 1 one (construct 6 three 
-        Poly.poly_zero))))))
+        Poly.poly_zero)))))))
 
 let _ = Poly.print_poly_d "P" p
 

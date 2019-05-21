@@ -8,7 +8,7 @@ module G = MakeGenerator(P)
 
 let _ = 
     (* Génère un polynôme avec 100 tirages *)
-    let p = G.generer_polynome 100 in
+    let p = G.generer_polynome 250 in
     printf "card(P) = %d\n" (P.length p);
     P.print_poly_d "P" p;
     (* On ne peut pas assurer que #p = 100 car 
