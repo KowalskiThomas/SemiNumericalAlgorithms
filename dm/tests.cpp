@@ -144,7 +144,7 @@ auto test_factor_power(const entier max_iter = 10000) -> void
   std::cout << "Best factor for " << x << " : " << result.first << " / " << result.second << std::endl;
 }
 
-auto main() -> int
+auto main(const int argc, const char** argv) -> int
 {
   test_power();
   test_factor_power();

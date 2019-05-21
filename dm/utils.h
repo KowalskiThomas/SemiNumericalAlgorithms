@@ -37,6 +37,7 @@ size_t get_size(const entier x)
   return std::abs(x.get_mpz_t()->_mp_size);
 }
 
+/* Renvoie le temps d'exécution d'une fonction d'arité nulle. */
 template <typename Function>
 auto get_exec_time(const Function f) -> clock_t
 {
@@ -46,12 +47,14 @@ auto get_exec_time(const Function f) -> clock_t
   return tock - tick;
 }
 
-auto get_random(const int n) -> entier
+/* Renvoie un grand entier aléatoire sur n limbs */
+auto get_random(const unsigned int limbs) -> entier
 {
   static gmp_randclass rand(gmp_randinit_default);
-  return rand.get_z_bits(n);
+  return rand.get_z_bits(limbs * sizeof(mp_limb_t));
 }
 
+/* Fonction puissance */
 template <typename Int>
 auto power(entier a, Int b) -> entier
 {
@@ -70,6 +73,7 @@ auto _2 = power<int>;
 auto _3 = power<unsigned long long>;
 auto _4 = power<unsigned int>;
 
+/* Vérifie si un entier est premier */
 auto is_prime(entier a) -> bool
 {
   if(a == 1 || a == 2)
@@ -81,11 +85,13 @@ auto is_prime(entier a) -> bool
   return true;
 }
 
+/* Teste le temps d'exécution d'une fonction de 1 à 1000 limbs */
 template <typename Function>
-auto test_time(Function f) -> void
+auto test_time(Function f, unsigned int min_limbs = 1, unsigned int max_limbs = 1000) -> void
 {
-  for(int i = 100; i < 1000; i++)
+  for(int i = min_limbs; i < max_limbs; i++)
   {
+    // On prend un grand entier sur i limbs
     auto a = get_random(i);
     auto f_bound = std::bind(f, a);
     auto t = get_exec_time(f_bound);
