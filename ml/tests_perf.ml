@@ -29,6 +29,8 @@ let get_run_time f x y =
 let _ = 
   let time_naif = get_run_time (P.prod) p q in
   let time_kara = get_run_time (P.karatsuba) p q in
+  let np = P.length p in 
+  printf "Nombre de tirages: %d (longueur P = %d)\n" n np;
   if time_naif < time_kara
-  then printf "Naïf plus intéressant (%f ; %f secondes de moins)\n" time_naif (time_kara -. time_naif)
-  else printf "Karatsuba plus intéressant (%f ; %f secondes de moins)\n" time_kara (time_naif -. time_kara) 
+  then printf "Naïf plus intéressant (%fs ; %f%% %f secondes de moins)\n" time_naif ((time_kara -. time_naif) /. time_kara *. 100.) (time_kara -. time_naif)
+  else printf "Karatsuba plus intéressant (%fs ; %f%% %f secondes de moins)\n" time_kara ((time_naif -. time_kara) /. time_naif *. 100.) (time_naif -. time_kara) 

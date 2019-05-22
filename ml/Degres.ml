@@ -1,4 +1,4 @@
-let max_deg = 999
+let max_deg = 9999
 
 module type Degres = sig 
   (* Le type des degrés *)
