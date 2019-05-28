@@ -87,9 +87,9 @@ auto is_prime(entier a) -> bool
 
 /* Teste le temps d'exécution d'une fonction de 1 à 1000 limbs */
 template <typename Function>
-auto test_time(Function f, unsigned int min_limbs = 1, unsigned int max_limbs = 1000) -> void
+auto test_time(Function f, unsigned int min_limbs = 1, unsigned int max_limbs = 1000, unsigned int step = 1) -> void
 {
-  for(int i = min_limbs; i < max_limbs; i++)
+  for(int i = min_limbs; i < max_limbs; i += step)
   {
     // On prend un grand entier sur i limbs
     auto a = get_random(i);
