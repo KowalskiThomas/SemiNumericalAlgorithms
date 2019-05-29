@@ -21,23 +21,26 @@ entier sqrt_v2(entier a)
 {
 		size_t n = get_size(a) ;
 		entier r = entier(a);
-		if (n >= 2) 
+		if (n > 2) 
 		{
 				if (n % 2 == 1)
 				{
 						r = r >> ((n-1) * 64); 
+						size_t j = get_size(r);
 						r = sqrt_v2(r) << (((n-1)) * 32);
 				}
 				else 
 				{
 						r = r >> ((n-2) * 64); 
+						size_t j = get_size(r);
 						r = sqrt_v2(r) << (((n-2)) * 32);
 				}
 		}
 		if (r == 0)
 				return 0;
 
-		entier r_before = entier(r) + 1;
+		int i = 0;
+		entier r_before = r + 1;
 		while (r < r_before)
 		{
 				r_before = r;
@@ -50,7 +53,7 @@ entier kroot_v2(entier a, int k)
 {
 		size_t n = get_size(a);
 		entier r = entier(a);
-		if (n >= k)
+		if (n > k)
 		{
 				int i = 1;
 				while ((n-i)%k != 0)

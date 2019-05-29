@@ -1,5 +1,11 @@
 all: tests perf
 
+yeti_test : kroot.o utils.h yeti_test.cpp
+	g++ kroot.o yeti_test.cpp -lgmp -lgmpxx -o yeti_test -g
+
+kroot.o : kroot.cpp kroot.h
+	g++ -c kroot.cpp -lgmp -lgmpxx 
+
 tests:
 	g++ tests.cpp -lgmp -lgmpxx -o tests -std=c++17 -O2
 	
