@@ -1,6 +1,9 @@
 #include "code.h"
 #include "utils.h"
 
+/**
+ * Teste la fonction power (puissance)
+ */
 auto test_power() -> void
 {
   std::cout << "Tests power" << std::endl;
@@ -13,6 +16,9 @@ auto test_power() -> void
   std::cout << "=> OK" << std::endl;
 }
 
+/**
+ * Teste la fonction root<n> (racine n-ième)
+ */
 template <unsigned int n>
 auto test_root() -> void
 {
@@ -29,6 +35,10 @@ auto test_root() -> void
   std::cout << "=> OK" << std::endl;
 }
 
+/**
+ * Template utilisé pour générer tous les test_root<k>
+ * pour k <= n
+ */
 template <int n>
 auto test_all_roots() -> void
 {
@@ -36,11 +46,16 @@ auto test_all_roots() -> void
   test_all_roots<n - 1>();
 }
 
+/* Cas de base */
 template <>
 auto test_all_roots<1>() -> void{
 
 };
 
+/**
+ * Fonction pour mesurer le temps de chaque root<k> avec k <= n
+ * (Pas utilisé)
+ */
 template <int n>
 auto time_all_roots()
 {
@@ -49,6 +64,7 @@ auto time_all_roots()
   test_all_roots<n - 1>();
 }
 
+/* Cas de base */
 template <>
 auto time_all_roots<1>()
 {
@@ -56,6 +72,11 @@ auto time_all_roots<1>()
   test_time(roots_up_to<1>::f);
 }
 
+/**
+ * Teste la validité de la fonction factor2 (à savoir x = a^2 - b^2)
+ * max_iter => Itérations maximales avant l'abandon de la recherche
+ * display_info / display_results => Affiche ou non des infos sur l'exécution
+ */
 auto test_factor2(const entier max_iter = 1000, const bool display_info = false, const bool display_results = false) -> void
 {
   const auto min = 1;
@@ -97,6 +118,10 @@ auto test_factor2(const entier max_iter = 1000, const bool display_info = false,
   std::cout << "=> OK" << std::endl;
 }
 
+/**
+ * Teste la validité de la fonction factor3 (x = a^3 - b^3)
+ * max_iter => Itérations maximales avant d'abandonner la recherche
+ */
 auto test_factor3(const entier max_iter = 1000, const bool display_info = false, const bool display_results = false) -> void
 {
   const auto min = 1;
@@ -130,12 +155,21 @@ auto test_factor3(const entier max_iter = 1000, const bool display_info = false,
   std::cout << "=> OK" << std::endl;
 }
 
+/* Instanciation de toutes les root<k> pour k <= 1500 */
 roots_up_to<1500> _roots_up_to;
+
+/**
+ * Teste toutes les root<k> pour k <= 50
+ */
 auto test_roots() -> void
 {
   test_all_roots<50>();
 }
 
+/**
+ * Teste la factorisation a = r^k
+ * max_iter => Itérations maximales avant abandon (très rarement utilisé)
+ */
 auto test_factor_power(const entier max_iter = 10000) -> void
 {
   std::cout << "Test factor a = r^k" << std::endl;

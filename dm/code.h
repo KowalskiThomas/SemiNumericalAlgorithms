@@ -3,16 +3,14 @@
 
 #include "utils.h"
 
+/**
+ * Racine N-ième
+ */
 template <int N>
 auto root(const entier a) -> entier
 {
   static_assert(N > 0, "Cannot compute negative or null roots.");
 
-  /**
-     * D'après gnuplot, c'est un algorithme de type assez quadratique.
-     * (en tout cas pour n = 2)
-     * gnuplot> plot "data.txt" 1:($2/$1/$1) -> constant
-     */
   if(a == 0)
     return 0;
 
@@ -28,6 +26,9 @@ auto root(const entier a) -> entier
   return r_before;
 }
 
+/**
+ * Instancie toutes les root<k> pour k <= n
+ */
 template <int n>
 struct roots_up_to
 {
@@ -35,15 +36,14 @@ struct roots_up_to
   typedef roots_up_to<n - 1> next;
 };
 
+/* Instanciation de root<1> à root<150> */
 using _ = roots_up_to<150>;
 
+/**
+ * Racine N-ième mais sans template 
+ */
 auto root(const entier a, const unsigned int N) -> entier
 {
-  /**
-     * D'après gnuplot, c'est un algorithme de type assez quadratique.
-     * (en tout cas pour n = 2)
-     * gnuplot> plot "data.txt" 1:($2/$1/$1) -> constant
-     */
   if(a == 0)
     return 0;
 
@@ -59,6 +59,9 @@ auto root(const entier a, const unsigned int N) -> entier
   return r_before;
 }
 
+/**
+ * Factorise a = r^k (cherche à maximiser k)
+ */
 auto factor_power(entier a, entier k_max) -> pair<entier, entier>
 {
   if(a == 0)
@@ -87,10 +90,12 @@ auto factor_power(entier a, entier k_max) -> pair<entier, entier>
       }
     }
   }
-  // return make_couple(best_base, best_exp);
   return pair<entier, entier>(best_base, best_exp);
 }
 
+/**
+ * Factorise a = x^2 - y^2
+ */
 auto factor2(const entier a, const entier max_iter) -> optional<std::pair<entier, entier>>
 {
   assert(a != 1);
@@ -111,7 +116,6 @@ auto factor2(const entier a, const entier max_iter) -> optional<std::pair<entier
     diff = u * u - a;
     v = root<2>(diff);
     is_square = (v * v) == diff;
-    // std::cout << "u2=" << u * u << " delta = " << diff << " " << v * v << ' ' << is_square << std::endl;
     iter++;
   } while(!is_square && iter < max_iter);
 
@@ -121,17 +125,15 @@ auto factor2(const entier a, const entier max_iter) -> optional<std::pair<entier
   auto p = u + v;
   auto q = u - v;
 
-  // auto y = u + v;
-  // auto x = u - v;
-
-  // auto p = (x + y) * (x + y) / 4;
-  // auto q = (x - y) * (x - y) / 4;
-
   assert((p + q) * (p + q) / 4 - (p - q) * (p - q) / 4 == a);
 
   return std::pair<entier, entier>(p, q);
 }
 
+/**
+ * Factorise x = a^3 - b^3
+ * max_a => Valeur maximale de a
+ */
 auto factor3(entier x, entier max_a) -> optional<pair<entier, entier>>
 {
   entier a = 1;
