@@ -101,7 +101,7 @@ auto test_factor3(const entier max_iter = 1000, const bool display_info = false,
 {
   const auto min = 1;
   const auto max = 999;
-  std::cout << "Test factorization a = pq with a = a³-b³ from " << min << " to " << max << std::endl;
+  std::cout << "Test factorization x = pq with x = a³-b³ from " << min << " to " << max << std::endl;
   for(entier t = min; t < max; t++)
   {
     auto opq = factor3(t, t);
@@ -138,10 +138,29 @@ auto test_roots() -> void
 
 auto test_factor_power(const entier max_iter = 10000) -> void
 {
-  entier x = 125;
+  std::cout << "Test factor a = r^k" << std::endl;
+  
+  entier x = 5;
   auto result = factor_power(x, max_iter);
+  assert(result.first == 5 && result.second == 1);
 
-  std::cout << "Best factor for " << x << " : " << result.first << " / " << result.second << std::endl;
+  x = 125;
+  result = factor_power(x, max_iter);
+  assert(result.first == 5 && result.second == 3);
+
+  x = 64;
+  result = factor_power(x, max_iter);
+  assert(result.first == 2 && result.second == 6);
+
+  x = 1;
+  result = factor_power(x, max_iter);
+  assert(result.first == 1 && result.second == 1);
+
+  x = 0;
+  result = factor_power(x, max_iter);
+  assert(result.first == 0 && result.second == 1);
+
+  std::cout << "=> OK" << std::endl;
 }
 
 auto main(const int argc, const char** argv) -> int

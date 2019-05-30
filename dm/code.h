@@ -61,8 +61,11 @@ auto root(const entier a, const unsigned int N) -> entier
 
 auto factor_power(entier a, entier k_max) -> pair<entier, entier>
 {
+  if(a == 0)
+    return pair(0, 1);
+
   if(a == 1)
-    return pair(1, k_max);
+    return pair(1, 1);
 
   auto best_base = entier();
   auto best_exp = 0;
