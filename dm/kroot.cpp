@@ -64,7 +64,7 @@ entier kroot_v2(entier a, int k)
 				r = kroot_v2(r, k) << ((n-i)/k * 64);
 		}
 
-		if (r==0)
+		if (a==0)
 				return 0;
 
 		entier r_before = entier(r)+1;
@@ -76,5 +76,39 @@ entier kroot_v2(entier a, int k)
 		return r_before;
 }
 
+unsigned long int log2(entier r)
+{
+		if (r <= 1)
+				return 0;
 
-		
+		unsigned long int i = (get_size(r) -1) * 64;
+		entier temp = r >> i;
+
+		while (temp > 0) 
+		{
+				temp = temp >> 1;
+				i++;
+		}
+
+		return (i-1);
+}
+
+couple one_factor(entier a) 
+{
+		unsigned long int k = log2(a);
+		for (k; k>=2; k--)
+		{
+				entier r = kroot_v2(a, k);
+				if (power(r, k) == a) 
+				{
+						couple c;
+						c.k = k;
+						c.r = r;
+						return c;
+				}
+		}
+		couple c;
+		c.k = 1;
+		c.r = a;
+		return c;
+}

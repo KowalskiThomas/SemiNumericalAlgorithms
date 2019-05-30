@@ -1,6 +1,12 @@
 all: tests perf
 
-yeti_test : kroot.o utils.h yeti_test.cpp
+one_factor_test : kroot.o one_factor_test.cpp
+	g++ kroot.o one_factor_test.cpp -lgmp -lgmpxx -o one_factor_test -g
+
+kroot_test : kroot.o yeti_test_kroot.cpp
+	g++ kroot.o yeti_test_kroot.cpp -lgmp -lgmpxx -o kroot_test -g
+
+yeti_test : kroot.o yeti_test.cpp
 	g++ kroot.o yeti_test.cpp -lgmp -lgmpxx -o yeti_test -g
 
 kroot.o : kroot.cpp kroot.h
