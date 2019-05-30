@@ -18,7 +18,7 @@ tests_nums:
 	ocamlc nums.cma Degres.ml Coeffs.ml Polynomes.ml Generator.ml tests_nums.ml -o tests_nums -g
 
 clean:
-	rm -rf test *.cmi *.o *.cmo *.cmx a.out tests_zpz tests_nums perf
+	rm -rf test *.cmi *.o *.cmo *.cmx a.out tests_zpz tests_nums perf tests_perfs_complet
 
 tar: clean
 	tar cvzf ASN-ThomasKowalski.tgz *.ml *.pdf 
